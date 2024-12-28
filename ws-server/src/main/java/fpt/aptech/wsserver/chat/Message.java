@@ -1,4 +1,4 @@
-package fpt.aptech.wsserver.model;
+package fpt.aptech.wsserver.chat;
 
 import lombok.*;
 
