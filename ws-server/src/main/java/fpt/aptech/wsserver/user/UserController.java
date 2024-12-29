@@ -1,18 +1,26 @@
 package fpt.aptech.wsserver.user;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+//@CrossOrigin(origins = "http:localhost:5173")
+//@RestController
+
+@CrossOrigin("*")
+@RestController
+@RequestMapping("api/user/")
+//@AllArgsConstructor
 public class UserController {
 
     @Autowired
@@ -40,6 +48,7 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> findConnectedUsers() {
+        System.out.println("list of online user: "+userService.findConnectedUsers());
         return ResponseEntity.ok(userService.findConnectedUsers());
     }
 }

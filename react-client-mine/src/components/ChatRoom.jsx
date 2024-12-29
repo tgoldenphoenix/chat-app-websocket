@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { over } from "stompjs";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { getAllOnlineUsers } from "../service/UserService";
 
 var client = null;
 
@@ -64,30 +65,23 @@ const ChatRoom = () => {
     });
     console.log("publish message");
     // document.querySelector("#connected-user-fullname").textContent = fullname;
+    console.log("client try to find online user");
     findAndDisplayConnectedUsers().then();
   };
 
   async function findAndDisplayConnectedUsers() {
     // fetch from @GetMapping("/users") in UserController
-    const connectedUsersResponse = await fetch("/users");
-    let connectedUsers = await connectedUsersResponse.json();
-    console.log(connectedUsers);
+    // const connectedUsersResponse = await fetch("http://localhost:8080/users");
+    // let connectedUsers = await connectedUsersResponse.json();
 
-    // you can also filter in the back-end
-    connectedUsers = connectedUsers.filter(
-      (user) => user.nickName !== nickname
-    );
-    const connectedUsersList = document.getElementById("connectedUsers");
-    connectedUsersList.innerHTML = "";
-
-    connectedUsers.forEach((user) => {
-      appendUserElement(user, connectedUsersList);
-      if (connectedUsers.indexOf(user) < connectedUsers.length - 1) {
-        const separator = document.createElement("li");
-        separator.classList.add("separator");
-        connectedUsersList.appendChild(separator);
-      }
-    });
+    getAllOnlineUsers()
+      .then((response) => {
+        console.log("List of online user" + response.data);
+        // setBooks(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   const handleUsername = (event) => {
