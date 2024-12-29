@@ -16,21 +16,47 @@ public class User {
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nick_name", nullable = false)
     private String nickName; // nickname là id
 
     private String fullName;
-    private Status status;
 
-    // Getter
+    @Enumerated(EnumType.STRING)
+    private Status status; // online / offline
+
     public String getNickName() {
         return nickName;
     }
 
-    // Setter
-    public void setStatus(Status newName) {
-        this.status = newName;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    //    // Getter
+//    public String getNickName() {
+//        return nickName;
+//    }
+//
+//    // Setter
+//    public void setStatus(Status newName) {
+//        this.status = newName;
+//    }
 
     @Override
     public String toString(){

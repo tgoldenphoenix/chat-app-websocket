@@ -1,33 +1,45 @@
 package fpt.aptech.wsserver.chat;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class ChatController {
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private SimpMessagingTemplate messagingTemplate;
+    private  ChatMessageService chatMessageService;
 
-    // client need to send to /app/message
-//    @MessageMapping("/message")
-//    @SendTo("/chatroom/public")
-//    public fpt.aptech.wsserver.chat.Message receiveMessage(@Payload Message message){
-//        return message;
-//    }
+    @MessageMapping("/chat")
+    public void processMessage(@Payload ChatMessage chatMessage) {
+        ChatMessage savedMsg = chatMessageService.save(chatMessage);
+        // john/queue/messages
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getRecipientId(), "/queue/messages",
+                new ChatNotification(
+                        savedMsg.getId(),
+                        savedMsg.getSenderId(),
+                        savedMsg.getRecipientId(),
+                        savedMsg.getContent()
+                )
+        );
+    }
 
-//    @MessageMapping("/private-message")
-//    public Message recMessage(@Payload Message message){
-//        // Create a dynamic topic with simpMessagingTemplate
-//        // It takes the url from .setUserDestinationPrefix() and
-//        // client need to subscribe to /user/Anhao/private. "Anhao" is dynamic
-//        simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/private",message);
-//        System.out.println(message.toString());
-//        return message;
-//    }
+    @GetMapping("/messages/{senderId}/{recipientId}")
+    public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
+                                                              @PathVariable String recipientId) {
+        return ResponseEntity
+                .ok(chatMessageService.findChatMessages(senderId, recipientId));
+    }
 }
 
