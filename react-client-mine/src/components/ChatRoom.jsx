@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 // import { over } from "stompjs";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { getAllOnlineUsers } from "../service/UserService";
 
 var client = null;
+const API_URL = "http://localhost:8080/api/user/";
 
 const ChatRoom = () => {
   const [userData, setUserData] = useState({
@@ -12,9 +14,16 @@ const ChatRoom = () => {
     fullName: "",
     status: false,
   });
+  const [connectedUsers, setConnectedUsers] = useState({});
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log("current user info:");
     console.log(userData);
+
+    findAndDisplayConnectedUsers();
+    console.log("list of online users");
+    console.log(connectedUsers);
   }, [userData]);
 
   const connect = () => {
@@ -37,9 +46,8 @@ const ChatRoom = () => {
     // client.deactivate();
   };
 
-  const onConnected = () => {
+  const onConnected = async () => {
     console.log("stomp client connect successfully!");
-
     setUserData({ ...userData, connected: true });
 
     // Subscribe client to URLs
@@ -63,21 +71,24 @@ const ChatRoom = () => {
         status: "ONLINE",
       }),
     });
-    console.log("publish message");
+    console.log("add/update user status into DB");
+
     // document.querySelector("#connected-user-fullname").textContent = fullname;
-    console.log("client try to find online user");
-    findAndDisplayConnectedUsers().then();
+    // console.log("client try to find online user (filtered)");
+    // findAndDisplayConnectedUsers().then();
+    // setLoading(true);
   };
 
   async function findAndDisplayConnectedUsers() {
-    // fetch from @GetMapping("/users") in UserController
-    // const connectedUsersResponse = await fetch("http://localhost:8080/users");
-    // let connectedUsers = await connectedUsersResponse.json();
-
-    getAllOnlineUsers()
+    // import from UserService
+    await axios
+      .get(API_URL + "users")
       .then((response) => {
-        console.log("List of online user" + response.data);
-        // setBooks(response.data);
+        // filter out current user
+        let connectedUsersFilter = response.data.filter(
+          (user) => user.nickName !== userData.nickName
+        );
+        setConnectedUsers(connectedUsersFilter);
       })
       .catch((error) => {
         console.log(error);
@@ -116,12 +127,15 @@ const ChatRoom = () => {
   return (
     <div className="container">
       {userData.connected ? (
-        <div className="chat-box">
-          <p>chat box</p>
+        <div className="">
+          <h2>Online user</h2>
+          {connectedUsers.map(function (data) {
+            return <p>User name: {data.nickName}</p>;
+          })}
           <button onClick={onLogout}>Log out</button>
         </div>
       ) : (
-        <div className="register">
+        <div className="">
           <input
             id="user-name"
             placeholder="Enter nick name"
