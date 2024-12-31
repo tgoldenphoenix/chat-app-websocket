@@ -15,15 +15,30 @@ const ChatRoom = () => {
     status: false,
   });
   const [connectedUsers, setConnectedUsers] = useState({});
-  // const [loading, setLoading] = useState(false);
+  const [messageToSend, setMessageToSend] = useState({
+    senderId: userData.nickName,
+    recipientId: "bilbo",
+    content: "",
+    timestamp: new Date(),
+  });
 
   useEffect(() => {
-    console.log("current user info:");
-    console.log(userData);
+    // console.log("current user info:");
+    // console.log(userData);
 
+    // update senderId for messageToSend
+    if (userData.nickName) {
+      setMessageToSend((prev) => ({
+        ...prev,
+        senderId: userData.nickName,
+      }));
+    }
+
+    // console.log("list of online users");
     findAndDisplayConnectedUsers();
-    console.log("list of online users");
-    console.log(connectedUsers);
+    // console.log(connectedUsers);
+
+    console.log(messageToSend);
   }, [userData]);
 
   const connect = () => {
@@ -95,6 +110,10 @@ const ChatRoom = () => {
       });
   }
 
+  const fetchAndDisplayUserChat = async () => {
+    //TODO
+  };
+
   const handleUsername = (event) => {
     const { value } = event.target;
     setUserData({ ...userData, nickName: value });
@@ -124,6 +143,18 @@ const ChatRoom = () => {
     // window.location.reload();
   };
 
+  const handleChangeMessage = (event) => {
+    const { name, value } = event.target;
+    // setMessageToSend(value);
+    setMessageToSend((prevFormData) => ({ ...prevFormData, content: value }));
+  };
+
+  const sendMessage = (event) => {
+    event.preventDefault();
+    // alert(`You searched for '${messageToSend.content}'`);
+    console.log(messageToSend);
+  };
+
   return (
     <div className="container">
       {userData.connected ? (
@@ -132,6 +163,19 @@ const ChatRoom = () => {
           {connectedUsers.map(function (data) {
             return <p>User name: {data.nickName}</p>;
           })}
+          <h3>Chat messages</h3>
+          <ul></ul>
+
+          <h3>Send message</h3>
+          <form onSubmit={sendMessage}>
+            <input
+              type="text"
+              value={messageToSend.content}
+              onChange={handleChangeMessage}
+              placeholder="Type your message..."
+            />
+            <button type="submit">Send</button>
+          </form>
           <button onClick={onLogout}>Log out</button>
         </div>
       ) : (

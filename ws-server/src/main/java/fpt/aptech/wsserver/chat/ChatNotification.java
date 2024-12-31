@@ -15,12 +15,13 @@ import lombok.*;
 @ToString
 public class ChatNotification {
     @Id
-    private String id;
+    private int id;
+
     private String senderId;
     private String recipientId;
     private String content;
 
-    public ChatNotification(String id, String senderId, String recipientId, String content) {
+    public ChatNotification(int id, String senderId, String recipientId, String content) {
         this.id = id;
         this.senderId = senderId;
         this.recipientId = recipientId;

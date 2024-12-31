@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+// Chat room khong co controller, khong duoc goi vao tu front-end
+// chatMessageService import chatRoomService
+
 @Service
 public class ChatRoomService {
     @Autowired

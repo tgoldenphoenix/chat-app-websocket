@@ -1,9 +1,6 @@
 package fpt.aptech.wsserver.chat;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -18,8 +15,9 @@ import java.util.Date;
 public class ChatMessage {
 
     @Id
-    @Column(name = "id", unique = true)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "id", unique = true)
+    private int id;
 
     private String chatId;
     private String senderId;
@@ -28,11 +26,11 @@ public class ChatMessage {
     private Date timestamp;
     private Status status;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
