@@ -7,6 +7,7 @@ import { getAllOnlineUsers } from "../service/UserService";
 
 var client = null;
 const API_URL = "http://localhost:8080/api/user/";
+const API_URL_CHAT = "http://localhost:8080/api/chat/";
 
 const ChatRoom = () => {
   const [userData, setUserData] = useState({
@@ -14,10 +15,12 @@ const ChatRoom = () => {
     fullName: "",
     status: false,
   });
-  const [connectedUsers, setConnectedUsers] = useState({});
+  const [connectedUsers, setConnectedUsers] = useState([{}]);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [userChatResponse, setUserChatResponse] = useState([{}]);
   const [messageToSend, setMessageToSend] = useState({
     senderId: userData.nickName,
-    recipientId: "bilbo",
+    recipientId: "admin01",
     content: "",
     timestamp: new Date(),
   });
@@ -35,10 +38,10 @@ const ChatRoom = () => {
     }
 
     // console.log("list of online users");
-    findAndDisplayConnectedUsers();
+    // findAndDisplayConnectedUsers();
     // console.log(connectedUsers);
 
-    console.log(messageToSend);
+    // console.log(messageToSend);
   }, [userData]);
 
   const connect = () => {
@@ -66,18 +69,14 @@ const ChatRoom = () => {
     setUserData({ ...userData, connected: true });
 
     // Subscribe client to URLs
-    // client.subscribe(
-    //   `/user/${userData.username}/queue/messages`,
-    //   onMessageReceived
-    // );
-    // client.subscribe(`/user/public`, onMessageReceived);
+    // /user & /chatroom là 2 cái .enableSimpleBroker()
+    client.subscribe(
+      `/user/${userData.username}/queue/messages`,
+      onMessageReceived
+    );
+    client.subscribe(`/user/public`, onMessageReceived);
 
-    // client.subscribe("/chatroom/public", onMessageReceived);
-    // stompClient.subscribe(
-    //   "/user/" + userData.username + "/private",
-    //   onPrivateMessage
-    // );
-
+    // update user status to ONLINE
     client.publish({
       destination: "/app/user.addUser",
       body: JSON.stringify({
@@ -89,9 +88,34 @@ const ChatRoom = () => {
     console.log("add/update user status into DB");
 
     // document.querySelector("#connected-user-fullname").textContent = fullname;
-    // console.log("client try to find online user (filtered)");
-    // findAndDisplayConnectedUsers().then();
+    console.log("client try to find online user (filtered)");
+    findAndDisplayConnectedUsers().then();
     // setLoading(true);
+  };
+
+  const onMessageReceived = async (payload) => {
+    await findAndDisplayConnectedUsers();
+
+    // !!!IMPORTANT
+    console.log("Message received", payload);
+    const message = JSON.parse(payload.body);
+    // if (selectedUserId && selectedUserId === message.senderId) {
+    //   displayMessage(message.senderId, message.content);
+    //   chatArea.scrollTop = chatArea.scrollHeight;
+    // }
+
+    // if (selectedUserId) {
+    //   document.querySelector(`#${selectedUserId}`).classList.add("active");
+    // } else {
+    //   messageForm.classList.add("hidden");
+    // }
+
+    // const notifiedUser = document.querySelector(`#${message.senderId}`);
+    // if (notifiedUser && !notifiedUser.classList.contains("active")) {
+    //   const nbrMsg = notifiedUser.querySelector(".nbr-msg");
+    //   nbrMsg.classList.remove("hidden");
+    //   nbrMsg.textContent = "";
+    // }
   };
 
   async function findAndDisplayConnectedUsers() {
@@ -109,10 +133,6 @@ const ChatRoom = () => {
         console.log(error);
       });
   }
-
-  const fetchAndDisplayUserChat = async () => {
-    //TODO
-  };
 
   const handleUsername = (event) => {
     const { value } = event.target;
@@ -152,7 +172,53 @@ const ChatRoom = () => {
   const sendMessage = (event) => {
     event.preventDefault();
     // alert(`You searched for '${messageToSend.content}'`);
-    console.log(messageToSend);
+    // console.log(messageToSend);
+
+    console.log("sending message to ws server");
+    if (messageToSend.content && client) {
+      client.publish({
+        destination: "/app/chat",
+        body: JSON.stringify(messageToSend),
+      });
+
+      // client.publish({
+      //   destination: "/app/user.addUser",
+      //   body: JSON.stringify({
+      //     nickName: userData.nickName,
+      //     fullName: userData.fullName,
+      //     status: "ONLINE",
+      //   }),
+      // });
+    }
+  };
+
+  const userItemClick = (nickname) => {
+    // console.log("selected user", nickname);
+    setSelectedUserId(nickname);
+    fetchAndDisplayUserChat();
+  };
+
+  const fetchAndDisplayUserChat = async () => {
+    //TODO
+    // const userChatResponse = await fetch(
+    //   `/messages/${nickname}/${selectedUserId}`
+    // );
+    // const userChat = await userChatResponse.json();
+    // chatArea.innerHTML = "";
+    // userChat.forEach((chat) => {
+    //   displayMessage(chat.senderId, chat.content);
+    // });
+    // chatArea.scrollTop = chatArea.scrollHeight;
+
+    await axios
+      .get(API_URL_CHAT + `messages/${userData.nickName}/${selectedUserId}`)
+      .then((response) => {
+        console.log("all messages: ", response.data);
+        // setConnectedUsers(connectedUsersFilter);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -160,9 +226,17 @@ const ChatRoom = () => {
       {userData.connected ? (
         <div className="">
           <h2>Online user</h2>
-          {connectedUsers.map(function (data) {
-            return <p>User name: {data.nickName}</p>;
-          })}
+          {connectedUsers ? (
+            connectedUsers.map(function (data) {
+              return (
+                <p onClick={() => userItemClick(data.nickName)}>
+                  User name: {data.nickName}
+                </p>
+              );
+            })
+          ) : (
+            <p>no other user yet</p>
+          )}
           <h3>Chat messages</h3>
           <ul></ul>
 

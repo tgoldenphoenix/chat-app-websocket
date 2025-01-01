@@ -27,11 +27,13 @@ public class UserController {
     private UserService userService;
 
     @MessageMapping("/user.addUser") // stompClient.send()
-//    @SendTo("/user/public") // front end subscribe to this url
+    // front end subscribe to this url
+    // When user connect/dis-connect, broadcast to public
+    @SendTo("/user/public")
     public User addUser(
             @Payload User user
     ) {
-        System.out.println("user tu front-end: " + user);
+//        System.out.println("UserController:34: user tu front-end: " + user);
         // save user == flip the status
         userService.saveUser(user);
         return user;
@@ -48,7 +50,7 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> findConnectedUsers() {
-        System.out.println("list of online user: "+userService.findConnectedUsers());
+//        System.out.println("UserController:51: list of online user: "+userService.findConnectedUsers());
         return ResponseEntity.ok(userService.findConnectedUsers());
     }
 }

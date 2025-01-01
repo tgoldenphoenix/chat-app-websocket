@@ -1,36 +1,41 @@
 package fpt.aptech.wsserver.chat;
 
+import fpt.aptech.wsserver.chatroom.ChatRoom;
+import fpt.aptech.wsserver.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Entity
-@Table(name = "chatmessage")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+//@Entity
+//@Table(name = "chatmessage")
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@ToString
+
+//@Data
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@Builder
+@Document
 public class ChatMessage {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id", unique = true)
-    private int id;
-
+    private String id;
     private String chatId;
     private String senderId;
     private String recipientId;
     private String content;
     private Date timestamp;
-    private Status status;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -74,16 +79,15 @@ public class ChatMessage {
         this.timestamp = timestamp;
     }
 
-    public Status getStatus() {
-        return status;
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "id='" + id + '\'' +
+                ", chatId='" + chatId + '\'' +
+                ", senderId='" + senderId + '\'' +
+                ", recipientId='" + recipientId + '\'' +
+                ", content='" + content + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
     }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    //Getter
-//    public String getReceiverName() {
-//        return receiverName;
-//    }
 }

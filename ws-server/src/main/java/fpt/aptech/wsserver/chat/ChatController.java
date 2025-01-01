@@ -19,15 +19,19 @@ import java.util.List;
 @RequestMapping("api/chat/")
 public class ChatController {
 
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
     private  ChatMessageService chatMessageService;
 
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage chatMessage) {
+        System.out.println(chatMessage.toString());
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
         // john/queue/messages
         messagingTemplate.convertAndSendToUser(
-                chatMessage.getRecipientId(), "/queue/messages",
+                chatMessage.getRecipientId(),
+                "/queue/messages",
                 new ChatNotification(
                         savedMsg.getId(),
                         savedMsg.getSenderId(),
@@ -40,6 +44,7 @@ public class ChatController {
     @GetMapping("/messages/{senderId}/{recipientId}")
     public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
                                                               @PathVariable String recipientId) {
+        System.out.println("ChatController:47: recipientid: "+ recipientId);
         return ResponseEntity
                 .ok(chatMessageService.findChatMessages(senderId, recipientId));
     }

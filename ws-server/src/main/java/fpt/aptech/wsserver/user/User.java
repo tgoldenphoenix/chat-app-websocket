@@ -1,28 +1,35 @@
 package fpt.aptech.wsserver.user;
 
+import fpt.aptech.wsserver.chatroom.ChatRoom;
 import jakarta.persistence.*;
-import lombok.*;
+//import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
-@Setter
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.List;
+
+//@Entity
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@NoArgsConstructor
 //@FieldDefaults(level = AccessLevel.PACKAGE)
 // table name khong dung user it is reserved word in SQL
-@Table(name = "chatuser")
+//@Table(name = "chatuser")
+@Document
 public class User {
-
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "nick_name", nullable = false)
     private String nickName; // nickname là id
-
     private String fullName;
+    private Status status;
 
-    @Enumerated(EnumType.STRING)
-    private Status status; // online / offline
+//    @OneToMany(mappedBy = "sender_id",fetch = FetchType.LAZY)
+//    private List<ChatRoom> chatRooms = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "recipient_id",fetch = FetchType.LAZY)
+//    private List<ChatRoom> chatRoomss = new ArrayList<>();
 
     public String getNickName() {
         return nickName;
@@ -47,16 +54,6 @@ public class User {
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    //    // Getter
-//    public String getNickName() {
-//        return nickName;
-//    }
-//
-//    // Setter
-//    public void setStatus(Status newName) {
-//        this.status = newName;
-//    }
 
     @Override
     public String toString(){

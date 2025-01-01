@@ -1,5 +1,6 @@
 package fpt.aptech.wsserver.chatroom;
 
+import fpt.aptech.wsserver.user.User;
 import fpt.aptech.wsserver.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,6 @@ public class ChatRoomService {
                         var chatId = createChatId(senderId, recipientId);
                         return Optional.of(chatId);
                     }
-
                     return  Optional.empty();
                 });
     }

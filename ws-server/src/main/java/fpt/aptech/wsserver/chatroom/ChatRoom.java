@@ -1,24 +1,32 @@
 package fpt.aptech.wsserver.chatroom;
 
+import fpt.aptech.wsserver.chat.ChatMessage;
+import fpt.aptech.wsserver.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "chatroom")
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+import java.util.ArrayList;
+import java.util.List;
+
+//@Entity
+//@Table(name = "chatroom")
+//@Getter
+//@Setter
+//@Builder
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@ToString
+@Document
 public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+    private String id;
     private String chatId;
     private String senderId;
     private String recipientId;
+
+    public ChatRoom() {}
 
     public ChatRoom( String chatId, String senderId, String recipientId) {
 //        this.id = id;
@@ -27,11 +35,11 @@ public class ChatRoom {
         this.recipientId = recipientId;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

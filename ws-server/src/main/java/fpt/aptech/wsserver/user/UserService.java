@@ -15,12 +15,12 @@ public class UserService {
 
 //        user.setStatus(Status.ONLINE);
 
-        User oldStudent = repository.findById(user.getNickName()).get();
-        oldStudent.setStatus(Status.ONLINE);
+//        User oldStudent = repository.findById(user.getNickName()).get();
+        user.setStatus(Status.ONLINE);
 
         // nếu dung only this line thi se update all properties
-        repository.save(oldStudent);
-        System.out.println("update status thanh cong");
+        repository.save(user);
+//        System.out.println("update status thanh cong");
     }
 
     public void disconnect(User user) {
@@ -32,6 +32,6 @@ public class UserService {
     }
 
     public List<User> findConnectedUsers() {
-        return repository.findByStatus(Status.ONLINE);
+        return repository.findAllByStatus(Status.ONLINE);
     }
 }
